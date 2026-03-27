@@ -126,6 +126,27 @@ app.delete("/api/contacts/:id", authMiddleware, async (req, res) => {
   }
 });
 
+// ✅ PUT /api/contacts/:id (protected)
+app.put("/api/contacts/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nama, email, telepon, pesan } = req.body;
+
+    if (!nama || !email) {
+      return res.status(400).json({ message: "Nama dan email wajib diisi" });
+    }
+
+    await db.query(
+      "UPDATE contacts SET nama=?, email=?, telepon=?, pesan=? WHERE id=?",
+      [nama, email, telepon, pesan, id],
+    );
+
+    res.json({ message: "Data berhasil diupdate" });
+  } catch (error) {
+    res.status(500).json({ message: "Gagal mengupdate data", error });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
